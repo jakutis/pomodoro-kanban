@@ -1,0 +1,25 @@
+{
+  "name": "pomodoro-kanban",
+  "version": "1.0.0",
+  "description": "A command line interface to your personal markdown-based kanban with pomodoro technique timer.",
+  "bin": "cli.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "homepage": "https://github.com/jakutis/pomodoro-kanban",
+  "bugs": "https://github.com/jakutis/pomodoro-kanban/issues",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jakutis/pomodoro-kanban"
+  },
+  "author": "Vytautas Jakutis <vytautas@jakut.is> (https://jakut.is)",
+  "license": "GPL-3.0",
+  "dependencies": {
+    "awesome-client": "1.0.x",
+    "chrono-node": "0.1.x",
+    "inquirer": "0.8.x",
+    "moment": "2.8.x",
+    "nopt": "3.0.x",
+    "progress": "1.1.x"
+  }
+}
