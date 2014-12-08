@@ -152,66 +152,69 @@ var progressIndicator = {
 };
 
 var makePomodori = function(cb) {
-    var another = function(minutes, pomodori) {
-        var tickDuration = 1000;
-        var ticks = minutes * 60;
-        var end = moment().add(minutes, 'minutes');
-
-        var progress = new ProgressBar('  [:bar] :percent', {
-            total: ticks,
-            incomplete: ' '
-        });
-        var pomodoro = {
-            start: new Date()
-        };
-        var onInterrupt = function() {
-            process.removeListener('SIGINT', onInterrupt);
-            onInterrupt = null;
-            progress.curr = ticks;
-        };
-        process.addListener('SIGINT', onInterrupt);
-        var timer = setInterval(function() {
-            progress.tick(1);
-            progressIndicator.indicate(moment.utc(end.diff(moment())).format('mm:ss'));
-            if(progress.complete) {
-                if(onInterrupt) {
-                    process.removeListener('SIGINT', onInterrupt);
-                }
-                progressIndicator.clear();
-                pomodoro.finish = new Date();
-                clearInterval(timer);
-                inquirer.prompt([{
-                    name: 'summary',
-                    type: 'input',
-                    message: 'Enter pomodoro summary'
-                }, {
-                    name: 'another',
-                    type: 'confirm',
-                    message: 'Continue'
-                }], function(input) {
-                    pomodoro.summary = input.summary;
-                    pomodori.push(pomodoro);
-                    if(input.another) {
-                        another(minutes, pomodori);
-                    } else {
-                        cb(null, pomodori);
-                    }
-                });
+    var another = function(pomodori) {
+        inquirer.prompt({
+            name: 'minutes',
+            type: 'input',
+            message: 'Enter minutes to focus on this goal'
+        }, function(input) {
+            var minutes = parseInt(input.minutes, 10);
+            if(Number.isNaN(minutes) || minutes < 0) {
+                return another(pomodori);
             }
-        }, tickDuration);
+            if(minutes === 0) {
+                return cb(null, pomodori);
+            }
+
+            var tickDuration = 1000;
+            var ticks = minutes * 60;
+            var end = moment().add(minutes, 'minutes');
+
+            var progress = new ProgressBar('  [:bar] :percent', {
+                total: ticks,
+                incomplete: ' '
+            });
+            var pomodoro = {
+                start: new Date()
+            };
+            var onInterrupt = function() {
+                process.removeListener('SIGINT', onInterrupt);
+                onInterrupt = null;
+                progress.curr = ticks;
+            };
+            process.addListener('SIGINT', onInterrupt);
+            var timer = setInterval(function() {
+                progress.tick(1);
+                progressIndicator.indicate(moment.utc(end.diff(moment())).format('mm:ss'));
+                if(progress.complete) {
+                    if(onInterrupt) {
+                        process.removeListener('SIGINT', onInterrupt);
+                    }
+                    progressIndicator.clear();
+                    pomodoro.finish = new Date();
+                    clearInterval(timer);
+                    inquirer.prompt([{
+                        name: 'summary',
+                        type: 'input',
+                        message: 'Enter pomodoro summary'
+                    }, {
+                        name: 'another',
+                        type: 'confirm',
+                        message: 'Continue'
+                    }], function(input) {
+                        pomodoro.summary = input.summary;
+                        pomodori.push(pomodoro);
+                        if(input.another) {
+                            another(minutes, pomodori);
+                        } else {
+                            cb(null, pomodori);
+                        }
+                    });
+                }
+            }, tickDuration);
+        });
     };
-    inquirer.prompt({
-        name: 'minutes',
-        type: 'input',
-        message: 'Enter minutes to focus on this goal'
-    }, function(input) {
-        var minutes = parseInt(input.minutes, 10);
-        if(minutes === 0) {
-            cb(null, []);
-        } else {
-            another(minutes, []);
-        }
-    });
+    another([]);
 };
 
 var save = function(converter, filename, goals, cb) {
