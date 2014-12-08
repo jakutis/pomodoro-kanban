@@ -1,6 +1,6 @@
 {
   "name": "pomodoro-kanban",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A command line interface to your personal markdown-based kanban with pomodoro technique timer.",
   "bin": "cli.js",
   "scripts": {
