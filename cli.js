@@ -205,7 +205,7 @@ var makePomodori = function(cb) {
                         pomodoro.summary = input.summary;
                         pomodori.push(pomodoro);
                         if(input.another) {
-                            another(minutes, pomodori);
+                            another(pomodori);
                         } else {
                             cb(null, pomodori);
                         }
